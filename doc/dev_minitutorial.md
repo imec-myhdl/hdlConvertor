@@ -3,9 +3,12 @@
 # Basic project setup in Eclipse (eclipse + CDT -> C/C++ project)
 (Note that we will use python3-dbg, if you want to use python3/2 you have to recompile.
  Without -dbg you will mostly see only segfaults without explanation if there is some problem.)
+* in eclise.ini increase memory available for eclise or c++ indexing will be very slow (1min+)
+   `-Xms1024 -Xmx4096m` or more depending on how many plugins in eclipse you have installed.
+
 (Note that there python3.7 is used you may have to change this version if required.)
 * `sudo apt install python3-dev python3-dbg`
-* create a C/C++ project from this repo
+* create a C/C++ project from this repo (or add C++ nature to Python project)
 * project properties ->
    * C/C++ General -> Paths and Symbols -> add Python and ANTLR include dir (for all lags)
   ```
@@ -14,7 +17,7 @@
 
   ```
    * C/C++ build ->
-       * Build command: `python3-dbg setup.py -j8` (-j8 for build with 8 threads)
+       * Build command: `python3-dbg setup.py -j8` (-j8 for build with 8 concurrent process)
        * uncheck Generate makefile automatically
        * set build directory to project root
        * in Behavior tab change target Build (increamental) from "all" to "build"
@@ -29,16 +32,16 @@
    	 (only if something is seriously broken)
      ```
      rm src/vhdlConvertor/vhdlParser/                             \
-        src/verilogConvertor/Verilog2001Parser/                   \
+        src/verilogConvertor/sv2017Parser/                   \
         src/verilogPreproc/verilogPreprocParser/                  \
         src/svConvertor/sv2012Parser/                             \
         include/hdlConvertor/svConvertor/sv2012Parser/            \
-        include/hdlConvertor/verilogConvertor/Verilog2001Parser/  \
         include/hdlConvertor/verilogPreproc/verilogPreprocParser/ \
         include/hdlConvertor/vhdlConvertor/vhdlParser/ -r
      ```
 
 # Debuging in Eclipse
+* apt install python3-dbg # because normal python crashes on some errors without reporting (like undefined symbol in c library)
 * new debug configuration -> C++ Application
 	* C/C++ Aplication: `/usr/bin/python3-dbg`
 	* Arguments: $NAME_OF_YOUR_SCRIPT etc
@@ -65,3 +68,5 @@
       && javac -cp $CLASSPATH vhdl*.java                       \
       && java -cp $CLASSPATH:$PWD "org.antlr.v4.gui.TestRig" vhdl design_file -gui ../../tests/vhdl/mux.vhd -help -diagnostics -trace -tokens
    ```
+   * note that for composite grammars (*Lexer.g4 + *Parser.g4) bout grammars should be agument of antlr4
+     and the name of grammar for org.antlr.v4.gui.TestRig is name without Parser/lexer.
